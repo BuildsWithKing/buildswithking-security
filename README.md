@@ -1,5 +1,11 @@
 # 🔐 BuildsWithKing-Security
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/BuildsWithKing/buildswithking-security)
+![GitHub](https://img.shields.io/github/license/BuildsWithKing/buildswithking-security)
+![GitHub issues](https://img.shields.io/github/issues/BuildsWithKing/buildswithking-security)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/BuildsWithKing/buildswithking-security)
+![GitHub stars](https://img.shields.io/github/stars/BuildsWithKing/buildswithking-security?style=social)
+
 A lightweight Solidity security utilities library.  
 This repository contains reusable, security-focused smart contract modules that you can easily import into your Solidity projects, similar to OpenZeppelin’s approach.
 
