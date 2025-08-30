@@ -55,6 +55,10 @@ Pull requests are welcome! If you’d like to add new security modules or improv
 ## Author
 Built and maintained by [Michealking (@BuildsWithKing)](https://github.com/BuildsWithKing)
 
+
 ## License
 
 This project is licensed under the [MIT License](https://github.com/BuildsWithKing/buildswithking-security/blob/main/LICENSE).
+
+## Version
+Current stable release: [v1.0.0](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.0.0)
