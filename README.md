@@ -7,11 +7,18 @@
 ![GitHub stars](https://img.shields.io/github/stars/BuildsWithKing/buildswithking-security?style=social)
 
 A lightweight Solidity security utilities library.  
-This repository contains reusable, security-focused smart contract modules that you can easily import into your Solidity projects, similar to OpenZeppelin’s approach.
+This repository contains reusable, security-focused smart contract modules,inspired by OpenZeppelin’s security patterns, but written from scratch with modern Solidity features.
 
-## Features
+⚡ Why?  
+Instead of just importing libraries, I’m rebuilding core modules to:  
+- Understand Solidity security at a deeper level.  
+- Explore gas-optimized patterns.  
+- Practice rigorous testing (unit, fuzz, invariants).  
+- Share my progress openly with the community.
+
+## 🗃️ Features
 - Reentrancy protection (NonReentrant)
-- Ownership and access control utilities (coming soon)
+- Ownership and access control utilities (Kingable)
 - Gas-optimized security patterns for modern Solidity. 
 
 ## Installation
