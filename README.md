@@ -1,5 +1,6 @@
 ## ⚠️ Security Disclaimer
-This contract has not been audited. Use at your own risk. Do not use in production environments without proper review.
+
+Contracts on this repository has not been audited. Use at your own risk. **Do not use in production environments without proper review**.
 
 # 🔐 BuildsWithKing-Security
 
