@@ -1,3 +1,6 @@
+## ⚠️ Security Disclaimer
+This contract has not been audited. Use at your own risk. Do not use in production environments without proper review.
+
 # 🔐 BuildsWithKing-Security
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/BuildsWithKing/buildswithking-security)
