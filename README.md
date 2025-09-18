@@ -72,4 +72,4 @@ Built and maintained by [Michealking (@BuildsWithKing)](https://github.com/Build
 This project is licensed under the [MIT License](https://github.com/BuildsWithKing/buildswithking-security/blob/main/LICENSE).
 
 ## Version
-Current stable release: [v1.0.0](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.0.1)
+Current stable release: [v1.0.1](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.0.1)
