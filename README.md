@@ -1,6 +1,9 @@
-## ⚠️ Security Disclaimer
+## ⚠ Security Disclaimer
 
-Contracts on this repository has not been audited. Use at your own risk. **Do not use in production environments without proper review**.
+This repository has **not been audited**.  
+Use at your own risk. **Do not use in production environments without a proper security review.**
+
+---
 
 # 🔐 BuildsWithKing-Security
 
@@ -10,66 +13,114 @@ Contracts on this repository has not been audited. Use at your own risk. **Do no
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/BuildsWithKing/buildswithking-security)
 ![GitHub stars](https://img.shields.io/github/stars/BuildsWithKing/buildswithking-security?style=social)
 
-A lightweight Solidity security utilities library.  
-This repository contains reusable, security-focused smart contract modules, inspired by OpenZeppelin’s security patterns, but written from scratch with modern Solidity features.
+A **lightweight Solidity security utilities library**.  
 
-⚡ Why?  
-Instead of just importing libraries, I’m rebuilding core modules to:  
-- Understand Solidity security at a deeper level.  
-- Explore gas-optimized patterns.  
-- Practice rigorous testing (unit, fuzz, invariants).  
-- Share my progress openly with the community.
+This repository contains reusable, security-focused smart contract modules, inspired by OpenZeppelin’s battle-tested security patterns, **rebuilt from scratch** with modern Solidity features.
 
-## 🗃️ Features
-- Reentrancy protection (NonReentrant)
-- Ownership and access control utilities (Kingable)
-- Gas-optimized security patterns for modern Solidity. 
+---
 
-## Installation
+## ⚡ Why BuildsWithKing-Security?
+Instead of just importing libraries, this project is about rebuilding and learning:  
 
-You can import the contracts directly from GitHub in your Solidity files:
+- 🛡 *Deep Security Understanding* – Writing security primitives line-by-line.  
+- ⛽ *Gas-Optimized Patterns* – Exploring efficient implementations.  
+- 🧪 *Rigorous Testing* – Unit, fuzz, and invariant tests.  
+- 🌍 *Open Source Learning* – Sharing progress with the community.  
 
+---
 
-Example: Importing the Reentrancy Guard
+## 🗃 Features
+- 🔒 *Reentrancy Protection* (ReentrancyGuard)  
+- 👑 *Ownership & Access Control* (Kingable)  
+- ⛽ *Modern Gas-Optimized Security Patterns*
+
+## 📦 Available Modules
+- ReentrancyGuard → Prevents reentrant calls  
+- Kingable → Custom ownership & access control  
+
+🔜 Coming Soon:  
+- Pausable → Emergency stop pattern  
+- PullPayment → Safer ETH transfers
+
+---
+
+## 📦 Installation
+
+You can import contracts directly from GitHub in your Solidity files:  
+
+**Example: ReentrancyGuard**
 
 ```solidity
 import "https://github.com/BuildsWithKing/buildswithking-security/blob/main/contracts/security/ReentrancyGuard.sol";
 ```
 
-> 💡 Note: Always verify the contract code and the specific commit hash before using in production.
-For maximum safety, pin to a commit hash instead of main, like this:
+💡 **Best Practice**: Pin to a specific commit hash for safety:  
 
-```
+```solidity
 import "https://github.com/BuildsWithKing/buildswithking-security/blob/<commit-hash>/contracts/security/ReentrancyGuard.sol";
 ```
 
+---
 
-You can also install this package into your Foundry/Hardhat project by adding it as a Git submodule or using forge install:
+### Option 1: Foundry (Recommended)
 
 ```bash
 forge install BuildsWithKing/buildswithking-security
 ```
 
-Then import any module like:
+Specific version:
 
+```bash
+forge install BuildsWithKing/buildswithking-security@v1.0.1
 ```
-import "buildswithking-security/ReentrancyGuard.sol";
+
+Add this to foundry.toml: 
+```
+remappings = [
+    "buildswithking-security/=lib/buildswithking-security/contracts/"
+]
 ```
 
-## Contributing
+*Usage Example*:  
 
-Pull requests are welcome! If you’d like to add new security modules or improve existing ones, feel free to fork the repo and submit a PR.
+```solidity
+import {Kingable} from "buildswithking-security/access/Kingable.sol";
+import {ReentrancyGuard} from "buildswithking-security/security/ReentrancyGuard.sol";
 
-> All PRs will be reviewed for security and code quality before merging.
+contract MyContract is Kingable, ReentrancyGuard {
+    // Your secure logic here
+}
+```
+---
 
+### Option 2: Manual Clone
 
-## Author
+```bash
+git clone --branch v1.0.1 https://github.com/BuildsWithKing/buildswithking-security.git lib/buildswithking-security
+```
+
+Then configure your foundry.toml the same way as above.
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! 🚀  
+If you’d like to add new security modules or improve existing ones, fork the repo and open a PR.  
+
+> All contributions will be reviewed for *security soundness* and *code quality* before merging.
+
+---
+
+## 👤 Author
 Built and maintained by [Michealking (@BuildsWithKing)](https://github.com/BuildsWithKing)
 
+---
 
-## License
-
+## 📜 License
 This project is licensed under the [MIT License](https://github.com/BuildsWithKing/buildswithking-security/blob/main/LICENSE).
 
-## Version
+---
+
+## 📌 Version
 Current stable release: [v1.0.1](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.0.1)
