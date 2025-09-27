@@ -70,11 +70,9 @@ abstract contract KingImmutable {
         return s_king;
     }
 
-    // --------------------------------------------------- King's write function. -----------------------------------------------------
     /// @notice Checks if the given address is the current king.
-    /// @dev Restricted to king for demonstration/testing of onlyKing modifier.
     /// @return true if king, otherwise false.
-    function isKing(address _kingAddress) public view virtual onlyKing returns (bool) {
+    function isKing(address _kingAddress) public view virtual returns (bool) {
         // return true if equal, false otherwise.
         return _kingAddress == s_king;
     }
