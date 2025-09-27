@@ -22,7 +22,7 @@ abstract contract KingPausable {
     /// @param _king The king's address.
     error Unauthorized(address _user, address _king);
 
-    /// @notice Thrown for invalid address (zero address).
+    /// @notice Thrown for invalid address (zero address or this contract address).
     /// @dev Thrown when king tries assigning kingship to zero or this contract address.
     /// @param _kingAddress The king's address.
     error InvalidKing(address _kingAddress);
@@ -63,11 +63,11 @@ abstract contract KingPausable {
     event KingshipTransferred(address _zeroAddress, address indexed _newKingAddress);
 
     /// @notice Emitted when king activates contract.
-    /// @param _kingAddress The contract deployer's address.
+    /// @param _kingAddress The current king's address.
     event ContractActivated(address indexed _kingAddress);
 
     /// @notice Emitted when king pauses contract.
-    /// @param _kingAddress The contract deployer's address.
+    /// @param _kingAddress The current king's address.
     event ContractPaused(address indexed _kingAddress);
 
     // ------------------------------------------------------------- Constructor ---------------------------------------------------
@@ -113,7 +113,7 @@ abstract contract KingPausable {
         _;
     }
 
-    // ------------------------------------------------------------- King's external write functions. -------------------------------
+    // ------------------------------------------------------------- King's internal write functions. -------------------------------
     /// @notice Activates the contract. Only callable by the king.
     function _activate() internal onlyKing {
         // Revert `AlreadyActive` if contract is currently active.
@@ -156,11 +156,10 @@ abstract contract KingPausable {
         _pause();
     }
 
-    // -------------------------------------------------------------- Users public read function. ---------------------------------------
+    // -------------------------------------------------------------- Users public read functions. ---------------------------------------
     /// @notice Checks the current contract state.
-    /// @dev whenActive was added to this function to verify `whenActive modifier` works as intended.
     /// @return true if contract is active, false if paused.
-    function isContractActive() public view virtual whenActive returns (bool) {
+    function isContractActive() public view virtual returns (bool) {
         // Return contract state.
         return s_state == ContractState.Active;
     }
