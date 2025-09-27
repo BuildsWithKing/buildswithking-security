@@ -4,10 +4,10 @@
 /// @author Michealking (@BuildsWithKing)
 /// @custom: security-contact buildswithking@gmail.com
 /**
- * @notice Created on the 23rd of Sept, 2025.
+ * @notice Created on the 23rd Of Sept, 2025.
  *
  *     This contract sets the king at deployment (Initial king can be EOAs or contract address), restricts access to some functions with the modifier "onlyKing".
- *     Allows kingship transfer and renouncement, pause and activate contract using the whenActive modifier.
+ *     Allows kingship transfer and renouncement, pause and activate contract using the "whenActive" modifier.
  */
 
 /// @dev Abstract contract, to be inherited by other contracts that require king-based access control.
@@ -27,9 +27,9 @@ abstract contract KingablePausable {
     /// @param _king The king's address.
     error SameKing(address _king);
 
-    /// @notice Thrown for invalid address (zero address).
-    /// @dev Thrown when king tries transferring kingship to address zero.
-    /// @param _kingAddress The king's address.
+    /// @notice Thrown for invalid address (zero or this contract address).
+    /// @dev Thrown when king tries transferring kingship to zero or this contract address.
+    /// @param _kingAddress The invalid king's address.
     error InvalidKing(address _kingAddress);
 
     /// @notice Thrown for paused contract.
@@ -132,7 +132,9 @@ abstract contract KingablePausable {
         address _currentKing = s_king;
 
         // Revert if new king address is the current king's address.
-        if (_currentKing == _newKingAddress) revert SameKing(_currentKing);
+        if (_currentKing == _newKingAddress) {
+            revert SameKing(_currentKing);
+        }
 
         // Revert if new king is address zero, or this contract address.
         if (_newKingAddress == address(0) || _newKingAddress == address(this)) {
@@ -207,13 +209,13 @@ abstract contract KingablePausable {
         _activate();
     }
 
-    /// @notice Pauses the contract. Only callable by the king
+    /// @notice Pauses the contract. Only callable by the king.
     function pauseContract() external virtual onlyKing {
         // Call internal `_pause` function.
         _pause();
     }
 
-    // --------------------------------------------------- Users public read function. -----------------------------------------------------------
+    // --------------------------------------------------- Users public read functions. -----------------------------------------------------------
 
     /// @notice Checks the current king's address.
     /// @return Current king's address.
@@ -230,9 +232,8 @@ abstract contract KingablePausable {
     }
 
     /// @notice Checks the current contract state.
-    /// @dev whenActive was added to this function to verify `whenActive modifier` works as intended.
     /// @return true if contract is active, false if paused.
-    function isContractActive() public view virtual whenActive returns (bool) {
+    function isContractActive() public view virtual returns (bool) {
         // Return contract state.
         return s_state == ContractState.Active;
     }
