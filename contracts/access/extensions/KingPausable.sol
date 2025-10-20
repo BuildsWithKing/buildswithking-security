@@ -1,82 +1,72 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.30;
 
 /// @title KingPausable
 /// @author Michealking (@BuildsWithKing)
-/// @custom: security-contact buildswithking@gmail.com
+/// @custom:securitycontact buildswithking@gmail.com
 /**
  * @notice Created on the 23rd of Sept, 2025.
  *
- *     This contract sets the king at deployment (Initial king can be EOAs or contract address), restricts access to some functions with the modifier "onlyKing".
- *     Allows the king to pause and activate contract , and restricts access to functions using the whenActive modifier.
+ *         This contract sets the king at deployment (Initial king can be EOAs or contract address),
+ *            restricts access to some functions with the modifier "onlyKing".
+ *         Allows the king to pause and activate the contract, and restrict access to some functions using the whenActive modifier.
+ *
+ *     @dev   Abstract contract, to be inherited by other contracts that require activation-based access control.
  */
-
-/// @dev Abstract contract, to be inherited by other contracts that require king-based access control.
-
-pragma solidity ^0.8.30;
-
 abstract contract KingPausable {
-    // ----------------------------------------------------------- Custom errors --------------------------------------------------
-    /// @notice Thrown when caller is not king.
-    /// @dev Thrown when users tries performing king's only operation.
+    // ----------------------------------------------------------- Custom Errors --------------------------------------------------
+    /// @notice Thrown when the caller is not the king.
+    /// @dev Thrown when a user tries performing the king's only operation.
     /// @param _user The user's address.
     /// @param _king The king's address.
     error Unauthorized(address _user, address _king);
 
-    /// @notice Thrown for invalid address (zero address or this contract address).
-    /// @dev Thrown when king tries assigning kingship to zero or this contract address.
+    /// @notice Thrown for invalid address (zero or this address).
+    /// @dev Thrown when the king tries assigning kingship to zero or this contract address.
     /// @param _kingAddress The king's address.
     error InvalidKing(address _kingAddress);
 
     /// @notice Thrown for paused contract.
-    /// @dev Thrown when contract state is set to `Paused`.
+    /// @dev Thrown when the contract state is set to Paused.
     error PausedContract();
 
-    /// @notice Thrown for already active contract.
-    /// @dev Thrown when king tries activating contract when its already active.
+    /// @notice Thrown for an already active contract.
+    /// @dev Thrown when the king tries activating an already active contract.
     error AlreadyActive();
 
-    /// @notice Thrown for already paused contract.
-    /// @dev Thrown when king tries pausing contract when its already paused.
+    /// @notice Thrown for an already paused contract.
+    /// @dev Thrown when the king tries pausing an already active contract.
     error AlreadyPaused();
 
-    // ----------------------------------------------------------- State variable --------------------------------------------
+    // ----------------------------------------------------------- State Variable --------------------------------------------
 
-    /// @notice Assigns king's address.
+    /// @notice Records the king's address.
     address internal s_king;
 
-    /// @notice Records contract state.
-    ContractState internal s_state;
-
-    // ------------------------------------------------------------ Enums --------------------------------------------------------
-    /// @notice Defines contract state.
-    /// @dev Contract state can be `Paused` or `Active`.
-    enum ContractState {
-        Paused,
-        Active
-    }
-
+    /// @notice Records the contract's state.
+    bool private s_isActive;
     // -------------------------------------------------------------- Events ----------------------------------------------------
 
-    /// @notice Emitted when address zero transfers kingship to king at deployment.
+    /// @notice Emitted when the zero address transfers kingship to king at deployment.
     /// @param _zeroAddress The zero address.
     /// @param _newKingAddress The new king's address.
     event KingshipTransferred(address _zeroAddress, address indexed _newKingAddress);
 
-    /// @notice Emitted when king activates contract.
-    /// @param _kingAddress The current king's address.
+    /// @notice Emitted when the king activates the contract.
+    /// @param _kingAddress The king's address.
     event ContractActivated(address indexed _kingAddress);
 
-    /// @notice Emitted when king pauses contract.
-    /// @param _kingAddress The current king's address.
+    /// @notice Emitted when the king pauses the contract.
+    /// @param _kingAddress The king's address.
     event ContractPaused(address indexed _kingAddress);
 
     // ------------------------------------------------------------- Constructor ---------------------------------------------------
 
     /**
-     * @dev Sets the initial king (EOA or contract address, but not zero or this contract).
-     *     Initializes state to Active.
+     * @dev     Sets the initial king.
+     *          Initializes contract state to Active.
      *
-     *     @param _kingAddress The king's address.
+     * @param _kingAddress The king's address.
      */
     constructor(address _kingAddress) {
         // Revert if `_kingAddress` is the zero or this contract address.
@@ -84,87 +74,87 @@ abstract contract KingPausable {
             revert InvalidKing(_kingAddress);
         }
 
-        // Assign king address as king.
+        // Assign _kingAddress as the king.
         s_king = _kingAddress;
 
         // Set contract state to active on deployment.
-        s_state = ContractState.Active;
+        s_isActive = true;
 
-        // Emit event KingshipTransferred.
+        // Emit the event KingshipTransferred.
         emit KingshipTransferred(address(0), _kingAddress);
     }
 
     // ------------------------------------------------------------ Modifiers -------------------------------------------------------
 
-    /// @dev Restricts access to onlyKing.
+    /// @dev Restricts access to only the king.
     modifier onlyKing() {
         // Revert if caller is not the king.
         if (msg.sender != s_king) revert Unauthorized(msg.sender, s_king);
         _;
     }
 
-    /// @notice Retricts access when contract is paused.
+    /// @notice Retricts access when the contract is paused.
     /// @dev Retricts access once contract is set to `Paused`.
     modifier whenActive() {
         // Revert `PausedContract` if contract is paused.
-        if (s_state == ContractState.Paused) {
+        if (!s_isActive) {
             revert PausedContract();
         }
         _;
     }
 
-    // ------------------------------------------------------------- King's internal write functions. -------------------------------
-    /// @notice Activates the contract. Only callable by the king.
+    // ------------------------------------------------------- King's External Write Functions ---------------------------------------
+    /// @notice Activates the contract.
     function _activate() internal onlyKing {
-        // Revert `AlreadyActive` if contract is currently active.
-        if (s_state == ContractState.Active) {
+        // Revert if contract is currently active.
+        if (s_isActive) {
             revert AlreadyActive();
         }
 
-        // Set contract state to active.
-        s_state = ContractState.Active;
+        // Set the contract state to active.
+        s_isActive = true;
 
-        // Emit event ContractActivated.
+        // Emit the event ContractActivated.
         emit ContractActivated(s_king);
     }
 
-    /// @notice Pauses the contract. Only callable by the king.
+    /// @notice Pauses the contract.
     function _pause() internal onlyKing {
-        // Revert `AlreadyPaused` if contract is currently paused.
-        if (s_state == ContractState.Paused) {
+        // Revert if contract is currently paused.
+        if (!s_isActive) {
             revert AlreadyPaused();
         }
 
-        // Set contract state to paused.
-        s_state = ContractState.Paused;
+        // Set the contract state to paused.
+        s_isActive = false;
 
-        // Emit event ContractPaused.
+        // Emit the event ContractPaused.
         emit ContractPaused(s_king);
     }
 
-    // ------------------------------------------------------------- King's external write functions. -------------------------------
+    // ----------------------------------------------------- King's External Write Functions -----------------------------------------
 
-    /// @notice Activates the contract. Only callable by the king.
+    /// @notice Activates the contract.
     function activateContract() external virtual onlyKing {
-        // Call internal `_activate` function.
+        // Call the internal `_activate` function.
         _activate();
     }
 
-    /// @notice Pauses the contract. Only callable by the king
+    /// @notice Pauses the contract.
     function pauseContract() external virtual onlyKing {
-        // Call internal `_pause` function.
+        // Call the internal `_pause` function.
         _pause();
     }
 
-    // -------------------------------------------------------------- Users public read functions. ---------------------------------------
-    /// @notice Checks the current contract state.
-    /// @return true if contract is active, false if paused.
+    // -------------------------------------------------------------- Users Public Read Functions ------------------------------------
+    /// @notice Returns the current contract state.
+    /// @return `true` if the contract is active, `false` if paused.
     function isContractActive() public view virtual returns (bool) {
         // Return contract state.
-        return s_state == ContractState.Active;
+        return s_isActive;
     }
 
-    /// @notice Checks the current king's address.
+    /// @notice Returns the current king's address.
     /// @return Current king's address.
     function currentKing() public view virtual returns (address) {
         // Return king's address.
@@ -172,9 +162,9 @@ abstract contract KingPausable {
     }
 
     /// @notice Checks if the given address is the current king.
-    /// @return true if king, otherwise false.
+    /// @return `true` if address is the king, otherwise `false`.
     function isKing(address _kingAddress) public view virtual returns (bool) {
-        // return true if equal, false otherwise.
+        // return `true` if both are equal, `false` otherwise.
         return _kingAddress == s_king;
     }
 }

@@ -1,43 +1,43 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.30;
 
 /// @title KingImmutable
 /// @author Michealking (@BuildsWithKing)
+/// @custom:securitycontact buildswithking@gmail.com
 /**
  * @notice Created on the 22nd of Sept, 2025.
  *
- *     This contract sets the king as immutable at deployment, restricts access to some functions with the modifier "onlyKing".
+ *         This contract sets the king as immutable at deployment, restricts access to some functions with the modifier "onlyKing".
  *         King cannot be changed or renounced.
- *   @dev Abstract contract, to be inherited by other contracts that require immutable king-based access control.
+ *  @dev   Abstract contract, to be inherited by other contracts that require immutable king-based access control.
  */
-pragma solidity ^0.8.30;
-
 abstract contract KingImmutable {
-    // ----------------------------------------------------------- Custom errors --------------------------------------------------
-    /// @notice Thrown when caller is not king.
-    /// @dev Thrown when users tries performing king's only operation.
+    // ----------------------------------------------------------- Custom Errors -------------------------------------------
+    /// @notice Thrown when the caller is not the king.
+    /// @dev Thrown when a user tries performing the king's only operation.
     /// @param _user The user's address.
     /// @param _king The king's address.
     error Unauthorized(address _user, address _king);
 
-    /// @notice Thrown for invalid address (zero address).
-    /// @dev Thrown when king tries deploying the contract with address zero.
-    /// @param _kingAddress The king's address.
-    error InvalidKing(address _kingAddress);
+    /// @notice Thrown for invalid address (zero or this contract address).
+    /// @dev Thrown when the king tries deploying the contract with the zero or this contract address.
+    /// @param _invalidAddress The invalid address.
+    error InvalidKing(address _invalidAddress);
 
-    // ----------------------------------------------------------- State variable --------------------------------------------
+    // ----------------------------------------------------------- State Variable --------------------------------------------
 
-    /// @notice Assigns king's address.
+    /// @notice Records the king's address.
     address internal immutable s_king;
 
-    // -------------------------------------------------------------- Events -------------------------------------------------------
-    /// @notice Emitted once king is assigned at deployment.
+    // -------------------------------------------------------------- Event --------------------------------------------------
+    /// @notice Emitted once the king is assigned at deployment.
     /// @param _kingAddress The immutable king's address.
     event KingshipDeclared(address indexed _kingAddress);
 
-    // ------------------------------------------------------------- Constructor ---------------------------------------------------
+    // ------------------------------------------------------------- Constructor ---------------------------------------------
 
     /// @notice Deploys with an immutable king.
-    /// @dev Reverts if `_kingAddress` is zero or this contract.
+    /// @dev Reverts if `_kingAddress` is the zero or this contract address.
     /// @param _kingAddress The king's address.
     constructor(address _kingAddress) {
         // Revert if `_kingAddress` is the zero or this contract address.
@@ -45,7 +45,7 @@ abstract contract KingImmutable {
             revert InvalidKing(_kingAddress);
         }
 
-        // Assign king address as king.
+        // Assign _kingAddress as the king.
         s_king = _kingAddress;
 
         // Emit event KingshipDeclared.
@@ -54,26 +54,27 @@ abstract contract KingImmutable {
 
     // ------------------------------------------------------------ Modifier ----------------------------------------------------------
 
-    /// @dev Restricts access to onlyKing.
+    /// @dev Restricts access to only the king.
     modifier onlyKing() {
         // Revert if caller is not the king.
-        if (msg.sender != s_king) revert Unauthorized(msg.sender, s_king);
+        if (msg.sender != s_king) {
+            revert Unauthorized(msg.sender, s_king);
+        }
         _;
     }
 
-    // --------------------------------------------------- Users public read function. ------------------------------------------------
+    // --------------------------------------------------- Users Public Read Functions ------------------------------------------------
+    /// @notice Checks if the given address is the current king.
+    /// @return `true` if address is the king, otherwise `false`.
+    function isKing(address _kingAddress) public view virtual returns (bool) {
+        // return `true` if both are equal, `false` otherwise.
+        return _kingAddress == s_king;
+    }
 
-    /// @notice Checks the current king's address.
-    /// @return Current king's address.
+    /// @notice Returns the current king's address.
+    /// @return The current king's address.
     function currentKing() public view virtual returns (address) {
         // Return king's address.
         return s_king;
-    }
-
-    /// @notice Checks if the given address is the current king.
-    /// @return true if king, otherwise false.
-    function isKing(address _kingAddress) public view virtual returns (bool) {
-        // return true if equal, false otherwise.
-        return _kingAddress == s_king;
     }
 }
