@@ -84,7 +84,7 @@ remappings = [
 *Usage Example*:  
 
 ```solidity
-import {Kingable} from "buildswithking-security/access/Kingable.sol";
+import {Kingable} from "buildswithking-security/access/core/Kingable.sol";
 import {ReentrancyGuard} from "buildswithking-security/security/ReentrancyGuard.sol";
 
 contract MyContract is Kingable, ReentrancyGuard {
