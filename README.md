@@ -123,4 +123,4 @@ This project is licensed under the [MIT License](https://github.com/BuildsWithKi
 ---
 
 ## 📌 Version
-Current stable release: [v1.2.0](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.2.0)
+Current stable release: [v1.3.0](https://github.com/BuildsWithKing/buildswithking-security/releases/tag/v1.3.0)
