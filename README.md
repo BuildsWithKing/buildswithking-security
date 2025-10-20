@@ -71,7 +71,7 @@ forge install BuildsWithKing/buildswithking-security
 Specific version:
 
 ```bash
-forge install BuildsWithKing/buildswithking-security@v1.0.1
+forge install BuildsWithKing/buildswithking-security@v1.3.0
 ```
 
 Add this to foundry.toml: 
@@ -96,7 +96,7 @@ contract MyContract is Kingable, ReentrancyGuard {
 ### Option 2: Manual Clone
 
 ```bash
-git clone --branch v1.0.1 https://github.com/BuildsWithKing/buildswithking-security.git lib/buildswithking-security
+git clone --branch v1.3.0 https://github.com/BuildsWithKing/buildswithking-security.git lib/buildswithking-security
 ```
 
 Then configure your foundry.toml the same way as above.
