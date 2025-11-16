@@ -149,10 +149,10 @@ abstract contract KingAccessControlLite {
 
     // ------------------------------------------- External Write Function --------------------------
     /// @notice Renounces the caller's role.
-    /// @param role The role to be renouced.
+    /// @param role The role to be renounced.
     function renounceRole(bytes32 role) external {
-        // Return if the caller is the king.
-        if (s_roles[KING_ROLE][msg.sender]) {
+        // Return if the caller is the king or doesn't have the required role.
+        if (s_roles[KING_ROLE][msg.sender] || !s_roles[role][msg.sender]) {
             return;
         }
 
