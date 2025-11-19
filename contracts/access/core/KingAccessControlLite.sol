@@ -60,11 +60,11 @@ abstract contract KingAccessControlLite {
         _;
     }
 
-    // ------------------------------------------ Constructor -----------------------------------------
+    // ------------------------------------------ Initializer -----------------------------------------
     /// @notice Assigns the deployer as the initial king.
     /// @dev Sets the king's role at deployment.
     /// @param king_ The king's address.
-    constructor(address king_) {
+    function __KingACL_init(address king_) internal {
         // Call the internal Library `ensureNonZero` function.
         KingCheckAddressLib.ensureNonZero(king_);
 
@@ -119,11 +119,10 @@ abstract contract KingAccessControlLite {
         // Emit the event RoleRevoked.
         emit RoleRevoked(msg.sender, role, account);
     }
-
-    // ------------------------------------------- King's External Write Function ---------------------
+    
     /// @notice Transfers the king's role. Callable only by the king.
     /// @param newKing The new king's address.
-    function transferKingRole(address newKing) external onlyKing {
+    function _transferKingRole(address newKing) internal onlyKing {
         // Call the internal Library `ensureNonZero` function.
         KingCheckAddressLib.ensureNonZero(newKing);
 
@@ -145,6 +144,14 @@ abstract contract KingAccessControlLite {
 
         // Emit the event RoleGranted.
         emit RoleGranted(msg.sender, KING_ROLE, newKing);
+    }
+
+    // ------------------------------------------- King's External Write Function ---------------------
+    /// @notice Transfers the king's role. Callable only by the king.
+    /// @param newKing The new king's address.
+    function transferKingRole(address newKing) external onlyKing {
+        // Call the internal `_transferKingRole` function. 
+        _transferKingRole(newKing);
     }
 
     // ------------------------------------------- External Write Function --------------------------

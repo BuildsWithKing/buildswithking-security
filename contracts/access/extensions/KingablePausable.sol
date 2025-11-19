@@ -13,14 +13,12 @@ pragma solidity ^0.8.30;
  *
  *   @dev Abstract contract, to be inherited by contracts that require king-based and activation-based access control.
  */
-abstract contract KingablePausable {
-    // ----------------------------------------------------------- Custom errors --------------------------------------------------
-    /// @notice Thrown when the caller is not the king.
-    /// @dev Thrown when a user tries performing the king's only operation.
-    /// @param _user The user's address.
-    /// @param _king The king's address.
-    error Unauthorized(address _user, address _king);
 
+/// @notice Imports KingAccessControlLite contract.
+import {KingAccessControlLite} from "../core/KingAccessControlLite.sol";
+
+abstract contract KingablePausable is KingAccessControlLite {
+    // ----------------------------------------------------------- Custom Errors --------------------------------------------------
     /// @notice Thrown for the same king's address.
     /// @dev Thrown when the king tries transferring kingship to self.
     /// @param _king The king's address.
@@ -43,16 +41,14 @@ abstract contract KingablePausable {
     /// @dev Thrown when the king tries pausing an already active contract.
     error AlreadyPaused();
 
-    // ----------------------------------------------------------- State Variable --------------------------------------------
-
+    // ----------------------------------------------------------- State Variables --------------------------------------------
     /// @notice Records the king's address.
-    address internal s_king;
+    address public s_king;
 
     /// @notice Records the contract's state.
     bool private s_isActive;
 
     // -------------------------------------------------------------- Events --------------------------------------------------
-
     /// @notice Emitted when the king transfers kingship.
     /// @param _oldKingAddress The old king's address.
     /// @param _newKingAddress The new king's address.
@@ -71,8 +67,7 @@ abstract contract KingablePausable {
     /// @param _king The current king's address.
     event ContractPaused(address indexed _king);
 
-    // ------------------------------------------------------------- Constructor ---------------------------------------------------
-
+    // ------------------------------------------------------------- Constructor -------------------------------------------------
     /**
      * @dev     Sets the initial king.
      *          Initializes contract state to Active.
@@ -91,19 +86,14 @@ abstract contract KingablePausable {
         // Set contract state to active on deployment.
         s_isActive = true;
 
+        // Call KingAccessControlLite internal initializer function.
+        __KingACL_init(_kingAddress);
+
         // Emit the event KingshipTransferred.
         emit KingshipTransferred(address(0), _kingAddress);
     }
 
     // ------------------------------------------------------------ Modifiers -------------------------------------------------------
-
-    /// @dev Restricts access to only the king.
-    modifier onlyKing() {
-        // Revert if caller is not the king.
-        if (msg.sender != s_king) revert Unauthorized(msg.sender, s_king);
-        _;
-    }
-
     /// @notice Retricts access when the contract state is paused.
     /// @dev Retricts access once the contract is set to `Paused`.
     modifier whenActive() {
@@ -115,7 +105,6 @@ abstract contract KingablePausable {
     }
 
     // ------------------------------------------------------------- King's Internal Write Functions -----------------------
-
     /// @notice Transfers kingship to a new address.
     /// @dev Reverts if the new king is the same, zero or this contract address.
     /// @param _newKingAddress The new king's address.
@@ -136,6 +125,9 @@ abstract contract KingablePausable {
         // Assign _newKingAddress as new king.
         s_king = _newKingAddress;
 
+        // Call KingAccessControlLite `_transferKingRole` internal function. 
+        _transferKingRole(_newKingAddress);
+
         // Emit the event KingshipTransferred.
         emit KingshipTransferred(_currentKing, _newKingAddress);
     }
@@ -147,6 +139,9 @@ abstract contract KingablePausable {
 
         // Assign zero address as the king.
         s_king = address(0);
+
+        // Call KingAccessControlLite `_transferKingRole` internal function. 
+        _transferKingRole(address(0));
 
         // Emit the event KingshipRenounced.
         emit KingshipRenounced(_currentKing, address(0));
@@ -181,7 +176,6 @@ abstract contract KingablePausable {
     }
 
     // --------------------------------------------------- King's External Write Functions -------------------------------
-
     /// @notice Transfers kingship to a new address.
     /// @dev Reverts if the new king is the same, zero or this contract address.
     /// @param _newKingAddress The new king's address.
@@ -209,25 +203,15 @@ abstract contract KingablePausable {
     }
 
     // --------------------------------------------------- Users Public Read Functions ------------------------------------
-
-    /// @notice Returns the current king's address.
-    /// @return The current king's address.
-    function currentKing() public view virtual returns (address) {
-        // Return king's address.
-        return s_king;
-    }
-
     /// @notice Checks if the given address is the current king.
     /// @return `true` if address is the king, otherwise `false`.
     function isKing(address _kingAddress) public view virtual returns (bool) {
-        // return `true` if both are equal, `false` otherwise.
         return _kingAddress == s_king;
     }
 
     /// @notice Checks the current contract state.
     /// @return `true` if the contract is active, `false` if paused.
     function isContractActive() public view virtual returns (bool) {
-        // Return contract state.
         return s_isActive;
     }
 }

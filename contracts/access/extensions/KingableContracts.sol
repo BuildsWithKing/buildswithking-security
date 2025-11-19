@@ -15,14 +15,12 @@ pragma solidity ^0.8.30;
  *
  *   @dev  Abstract contract, to be inherited by other contracts that require contract-based access control.
  */
-abstract contract KingableContracts {
-    // ----------------------------------------------------------- Custom Errors --------------------------------------------------
-    /// @notice Thrown when the caller is not the king.
-    /// @dev Thrown when a user tries performing the king's only operation.
-    /// @param _user The user's address.
-    /// @param _king The king's address.
-    error Unauthorized(address _user, address _king);
 
+/// @notice Imports KingAccessControlLite contract.
+import {KingAccessControlLite} from "../core/KingAccessControlLite.sol";
+
+abstract contract KingableContracts is KingAccessControlLite {
+    // ----------------------------------------------------------- Custom Errors --------------------------------------------------
     /// @notice Thrown for the same king's address.
     /// @dev Thrown when the king tries transferring kingship to self.
     /// @param _king The king's address.
@@ -33,12 +31,10 @@ abstract contract KingableContracts {
     /// @param _invalidAddress The invalid address.
     error InvalidKing(address _invalidAddress);
     // ----------------------------------------------------------- State Variable --------------------------------------------
-
     /// @notice Records the king's address.
-    address internal s_king;
+    address public s_king;
 
     // -------------------------------------------------------------- Events --------------------------------------------------
-
     /// @notice Emitted when the king transfers kingship.
     /// @param _oldKingAddress The old king's address.
     /// @param _newKingAddress The new king's address.
@@ -50,7 +46,6 @@ abstract contract KingableContracts {
     event KingshipRenounced(address indexed _oldKingAddress, address _zeroAddress);
 
     // ------------------------------------------------------------- Constructor ---------------------------------------------------
-
     /// @notice Deploys with an initial contract-only king.
     /// @dev Reverts if `_kingAddress` is the zero, an EOA, or this contract address.
     /// @param _kingAddress The king's address.
@@ -63,23 +58,14 @@ abstract contract KingableContracts {
         // Assign _kingAddress as the king.
         s_king = _kingAddress;
 
+        // Call KingAccessControlLite internal initializer function.
+        __KingACL_init(_kingAddress);
+
         // Emit the event KingshipTransferred.
         emit KingshipTransferred(address(0), _kingAddress);
     }
 
-    // ------------------------------------------------------------ Modifier -------------------------------------------------------
-
-    /// @dev Restricts access to only the king.
-    modifier onlyKing() {
-        // Revert if caller is not the king.
-        if (msg.sender != s_king) {
-            revert Unauthorized(msg.sender, s_king);
-        }
-        _;
-    }
-
     // ------------------------------------------------------------- King's Internal Write Functions -------------------------------
-
     /// @notice Transfers kingship to another contract.
     /// @dev Reverts if _newKingAddress is the zero, an EOA, this contract, or the same as the current king's address.
     /// @param _newKingAddress The new king's contract address.
@@ -100,6 +86,9 @@ abstract contract KingableContracts {
         // Assign _newKingAddress as the new king.
         s_king = _newKingAddress;
 
+        // Call KingAccessControlLite `_transferKingRole` internal function. 
+        _transferKingRole(_newKingAddress);
+
         // Emit the event KingshipTransferred.
         emit KingshipTransferred(_currentKing, _newKingAddress);
     }
@@ -109,6 +98,9 @@ abstract contract KingableContracts {
         // Assign _currentKing.
         address _currentKing = s_king;
 
+        // Call KingAccessControlLite `_transferKingRole` internal function. 
+        _transferKingRole(address(0));
+
         // Assign zero address as the king.
         s_king = address(0);
 
@@ -117,7 +109,6 @@ abstract contract KingableContracts {
     }
 
     // ------------------------------------------------------------- King's External Write Functions -------------------------------
-
     /// @notice Transfers kingship to another contract.
     /// @dev Reverts if _newKingAddress is the zero, any EOA, this contract, or the same as the current king's address.
     /// @param _newKingAddress The new king's contract address.
@@ -133,14 +124,6 @@ abstract contract KingableContracts {
     }
 
     // --------------------------------------------------------------- Users Public Read Functions -----------------------------------
-
-    /// @notice Returns the current king's address.
-    /// @return The current king's address.
-    function currentKing() public view virtual returns (address) {
-        // Return king's address.
-        return s_king;
-    }
-
     /// @notice Checks if the given address is the current king.
     /// @return `true` if address is the king, otherwise `false`.
     function isKing(address _kingAddress) public view virtual returns (bool) {
