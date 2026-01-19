@@ -97,8 +97,8 @@ abstract contract KingableEOAs is KingAccessControlLite {
         // Assign _currentKing.
         address _currentKing = s_king;
 
-        // Call KingAccessControlLite `_transferKingRole` internal function. 
-        _transferKingRole(address(0));
+        // Call KingAccessControlLite `_renounceKingRole` internal function. 
+        _renounceKingRole();
 
         // Assign zero address as the king.
         s_king = address(0);
