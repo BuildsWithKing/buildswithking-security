@@ -140,8 +140,8 @@ abstract contract KingablePausable is KingAccessControlLite {
         // Assign zero address as the king.
         s_king = address(0);
 
-        // Call KingAccessControlLite `_transferKingRole` internal function. 
-        _transferKingRole(address(0));
+        // Call KingAccessControlLite `_renounceKingRole` internal function. 
+        _renounceKingRole();
 
         // Emit the event KingshipRenounced.
         emit KingshipRenounced(_currentKing, address(0));
