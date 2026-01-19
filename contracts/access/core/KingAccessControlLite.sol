@@ -146,6 +146,20 @@ abstract contract KingAccessControlLite {
         emit RoleGranted(msg.sender, KING_ROLE, newKing);
     }
 
+    /// @notice Renounces the king's role. Callable only by the king.
+    function _renounceKingRole() internal onlyKing {
+            unchecked {
+            // Transfer the king role to the zero address.
+            s_roles[KING_ROLE][address(0)] = true;
+
+            // Revoke the current king's role.
+            s_roles[KING_ROLE][msg.sender] = false;
+        }
+
+        // Emit the event RoleRevoked.
+        emit RoleRevoked(msg.sender, KING_ROLE, msg.sender);
+    }
+
     // ------------------------------------------- King's External Write Function ---------------------
     /// @notice Transfers the king's role. Callable only by the king.
     /// @param newKing The new king's address.
